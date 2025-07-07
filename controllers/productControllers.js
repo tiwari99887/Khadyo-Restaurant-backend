@@ -18,6 +18,7 @@ exports.createProduct = async (req, res) => {
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (error) {
+    console.error("Product creation error:", error); 
     res.status(500).json({ error: "Failed to create Product" });
   }
 };
@@ -37,13 +38,12 @@ exports.getAllProducts = async (req, res) => {
 };
 
 // Get products by category
-exports.getProductByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
+exports.getProductsByCategory = async (req, res) => {
 
-    const products = await Product.find({
-      category: { $regex: new RegExp(category, "i") },
-    });
+  const { categoryId } = req.params.categoryId;
+
+  try {
+    const products = await Product.find({category: categoryId}).populate("category");
 
     if (products.length === 0) {
       return res
